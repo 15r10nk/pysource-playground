@@ -1,0 +1,6 @@
+[submodule "pysource-codegen"]
+	path = pysource-codegen
+	url = git@github.com:15r10nk/pysource-codegen.git
+[submodule "pysource-minimize"]
+	path = pysource-minimize
+	url = git@github.com:15r10nk/pysource-minimize.git
