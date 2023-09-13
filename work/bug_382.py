@@ -1,0 +1,11 @@
+class name_0[name_5]:
+
+    @(name_5 := 0)
+    class name_3[*name_4](name_5=name_5):
+        {name_0 for name_0 in name_4 if name_5}
+
+# output:
+# Traceback (most recent call last):
+#   File "/home/frank/projects/pysource-playground/test_code.py", line 6, in <module>
+#     compile(source,sys.argv[1],"exec")
+# SystemError: compiler_lookup_arg(name='name_5') with reftype=3 failed in <generic parameters of name_3>; freevars of code name_3: ('.type_params', 'name_4', 'name_5')
