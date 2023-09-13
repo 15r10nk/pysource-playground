@@ -1,2 +1,3 @@
 venv*
-work
+work/*
+!work/bug_*

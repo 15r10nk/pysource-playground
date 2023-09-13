@@ -1,2 +1,3 @@
--e pysource-codegen
--e pysource-minimize
+-e ./pysource-codegen
+-e ./pysource-minimize
+click

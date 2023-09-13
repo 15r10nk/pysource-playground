@@ -6,25 +6,37 @@ import sys
 import subprocess as sp
 import pathlib
 import textwrap
+import click
 
-def main():
+@click.command()
+@click.option("--seed-start",type=int,default=0)
+@click.option("--num",type=int,default=100)
+@click.argument("seeds",nargs=-1,type=int)
+def main(seed_start,num,seeds):
 
     workdir=pathlib.Path("work")
     workdir.mkdir(exist_ok=True)
 
-    for seed in range(200):
+    if not seeds:
+        seeds=range(seed_start,seed_start+num)
+
+
+
+    for seed in seeds:
         print("test seed:",seed)
-        result=sp.run([sys.executable,"generate_code.py",str(seed)])
+        result=sp.run([sys.executable,"-W", "ignore" ,"generate_code.py",str(seed)],capture_output=True)
+
 
         source=(workdir/"generated_code.py").read_text()
 
         if result.returncode !=0:
+
             print("found issue -> minimize code")
 
             def checker(source):
                 file=(workdir/"check_minimize.py")
                 file.write_text(source)
-                result=sp.run([sys.executable,"test_code.py",str(file)],stdout=sp.DEVNULL,stderr=sp.DEVNULL)
+                result=sp.run([sys.executable,"-W", "ignore","test_code.py",str(file)])
 
                 bug_exists = result.returncode!=0
 
@@ -46,7 +58,7 @@ def main():
             result_file.write_text(newsource+"\n\n# output:\n"+textwrap.indent(output,"# "))
 
             md_file=workdir/f"bug_{seed}.md"
-            md_file.write_text("""
+            md_file.write_text(f"""
 ``` python
 {newsource}
 ```
