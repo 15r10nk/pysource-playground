@@ -1,3 +1,5 @@
 -e ./pysource-codegen
 -e ./pysource-minimize
 click
+inline-snapshot
+pytest

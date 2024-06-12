@@ -7,6 +7,7 @@ import subprocess as sp
 import pathlib
 import textwrap
 import click
+import shutil
 
 
 
@@ -17,37 +18,50 @@ import click
 @click.argument("seeds",nargs=-1,type=int)
 def main(seed_start,num,seeds,failed):
 
-    workdir=pathlib.Path("work")
-    workdir.mkdir(exist_ok=True)
+    work_dir=pathlib.Path("work")
+    work_dir.mkdir(exist_ok=True)
 
     if not seeds:
         seeds=range(seed_start,seed_start+num)
 
     if failed:
-        seeds=[int(f.stem.split("_")[-1]) for f in workdir.glob("bug_*.py")]
+        seeds=[int(f.stem.split("_")[-1]) for f in work_dir.glob("seed_*")]
 
 
     for seed in seeds:
+
+        seed_dir=work_dir/f"seed_{seed}"
+        seed_dir.mkdir(exist_ok=True)
+
+        source_file=(seed_dir/"generated.py")
         print("test seed:",seed)
-        result=sp.run([sys.executable,"-W", "ignore" ,"generate_code.py",str(seed)],capture_output=True)
+        if not source_file.exists():
 
+            result=sp.run([sys.executable,"-W", "ignore" , "generate_code.py",str(seed),str(source_file)],capture_output=True)
 
-        source=(workdir/"generated_code.py").read_text()
+            (seed_dir/"generated_code.out").write_bytes(result.stdout+result.stderr)
 
-        (workdir/"generated_code.out").write_bytes(result.stdout+result.stderr)
+            if result.returncode !=0:
+                print("error during code generation message:")
+                print(result.stdout.decode())
+                print(result.stderr.decode())
+                continue
 
+        result=sp.run([sys.executable,"-W", "ignore","test_code.py",str(source_file)],capture_output=True)
 
+        source=(source_file).read_text()
 
         if result.returncode !=0:
+            print("error message:")
             print(result.stdout.decode())
             print(result.stderr.decode())
             original_error=result.stderr.decode().splitlines()[-1]
 
-            print("found issue -> minimize code")
+            print(f"found issue (seed = {seed}) -> minimize code")
 
 
             def checker(source):
-                file=(workdir/"check_minimize.py")
+                file=(seed_dir/"check_minimize.py")
                 file.write_text(source)
                 result=sp.run([sys.executable,"-W", "ignore","test_code.py",str(file)],capture_output=True)
 
@@ -55,7 +69,7 @@ def main(seed_start,num,seeds,failed):
 
                 if bug_exists:
                     print(f"minimized to {len(source)} bytes")
-                    (workdir/"broken_code.py").write_text(source)
+                    (seed_dir/"broken_code.py").write_text(source)
 
                 return bug_exists
                 
@@ -63,7 +77,7 @@ def main(seed_start,num,seeds,failed):
             newsource=minimize(source,checker)
 
 
-            result_file=workdir/f"bug_{seed}.py"
+            result_file=seed_dir/f"bug.py"
             result_file.write_text(newsource)
 
             result=sp.run([sys.executable,"test_code.py",str(result_file)],capture_output=True)
@@ -74,12 +88,12 @@ def main(seed_start,num,seeds,failed):
 
             print(f"minimized code ({result_file})")
             print(result_file.read_text())
-        else:
-            for f in workdir.glob(f"bug_{seed}.*"):
-                print(f"bug is solved ... delete {f}")
-                f.unlink()
+            continue
+
+
+        print(f"bug is solved ... delete {seed_dir}")
+        shutil.rmtree(seed_dir)
             
-            #return 
 
 
 if __name__ == "__main__":
