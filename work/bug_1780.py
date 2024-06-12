@@ -1,8 +1,8 @@
 try:
-    match name_2:
-        case '':
+    match name_3:
+        case _ if name_0:
             pass
-except* name_0:
+except* name_3:
     pass
 else:
     name_5

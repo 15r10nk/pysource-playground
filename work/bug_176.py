@@ -1,10 +1,10 @@
 try:
-    match name_2:
-        case '':
+    match name_5:
+        case b'':
             pass
-except* name_0:
+except* name_2:
     pass
-else:
+finally:
     name_5
 
 # output:

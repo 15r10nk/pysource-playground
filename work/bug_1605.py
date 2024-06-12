@@ -1,10 +1,13 @@
 try:
-    match name_2:
-        case '':
-            pass
-except* name_0:
+    pass
+except:
     pass
 else:
+    if name_1:
+        pass
+    else:
+        pass
+finally:
     name_5
 
 # output:

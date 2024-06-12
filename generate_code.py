@@ -14,7 +14,7 @@ def before_compile(source):
 
 pysource_codegen._codegen.before_compile_hook=before_compile
 
-code=generate(int(sys.argv[1]))
+code=generate(int(sys.argv[1]),depth_limit=9)
 
 # store the result in a file because we have to support system crashes
 out_file.write_text(code)

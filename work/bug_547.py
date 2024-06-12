@@ -1,11 +1,11 @@
 try:
-    match name_2:
-        case '':
+    match name_0:
+        case b'':
             pass
-except* name_0:
+except:
     pass
-else:
-    name_5
+finally:
+    name_3
 
 # output:
 # python: Python/flowgraph.c:511: no_redundant_jumps: Assertion `0' failed.
