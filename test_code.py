@@ -8,7 +8,7 @@ source=pathlib.Path(sys.argv[1]).read_text()
 ast.parse(source,type_comments=True)
 ast.parse(source,type_comments=False)
 
-compile(source,sys.argv[1],"exec")
+compile(source,"<file>","exec")
 
 import ast
 
