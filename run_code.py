@@ -85,7 +85,7 @@ def test_seed(seed):
             footer+=f"""
     try:
         name_{n}({args})
-        print("called name_{n}({args})",i)
+        # print("called name_{n}({args})",i)
     except:
         pass
 """
@@ -98,5 +98,5 @@ def test_seed(seed):
     sp.run([sys.executable,"crash.py"],check=True)
 
 
-for seed in range(326,1000):
+for seed in range(327,1000):
     test_seed(seed)
